@@ -22,7 +22,7 @@
 	Original
 	--------
 
-        #Download a small 10-by-20 pixel cutout from a FITS file stored in Amazon S3 \with
+        #Download a small 10-by-20 pixel cutout from a FITS file stored in Amazon S3
 
         with fits.open(s3_uri, fsspec_kwargs={"anon": True}) as hdul:
             cutout = hdul[1].section[10:20, 30:50]
