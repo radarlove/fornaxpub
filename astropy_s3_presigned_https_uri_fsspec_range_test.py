@@ -6,6 +6,29 @@
 	This works but requires some different invocation than with an S3 url.
 	Worked on Linux, but not on my Mac Sonoma 14.5 due to SSL issues.
 
+    The source s3 is 214MB and the cutout returned is 800 bytes.
+
+    The size, in bytes, of the cutout section returned by fits.open() is not
+    an indicator of success because the section will be the correct size
+    regardless, however in the failure case the entire 214MB is downloaded
+    first and takes on the order of 20-30sec vs 500ms for the cutout on
+    a 10Mib/s link.
+   
+    For the large full file download Astropy will display a Download progress
+    bar.  This and the duration of the download were used to determine
+    success or failure:
+
+    Test                  Success                 Failure
+    ----                  -------                 -------
+
+    Download w/S3 URI     ~500ms                  N/A
+                          No progress bar
+
+    Download w/HTTPS      ~500ms                  20-30secs    
+    presigned URL         No D/L progress bar     D/L Progress bar visible
+    on 10MiB/s link       
+
+
 	The S3 example (below) in the astropy docs:
 		https://docs.astropy.org/en/latest/io/fits/usage/cloud.html
 	will return a section or cutout using a presigned HTTPS URL, but
@@ -26,7 +49,6 @@
 
         with fits.open(s3_uri, fsspec_kwargs={"anon": True}) as hdul:
             cutout = hdul[1].section[10:20, 30:50]
-
 
 
 	The test used the following S3 fits URI and generated the pre-signed URL as follows:
